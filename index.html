@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Service Report Form</title>
+  <style>
+    body {
+      font-family:"Segoe UI",Arial,Helvetica,sans-serif;
+      margin:0;padding:10px;
+      background:#eef2f7;color:#111;
+    }
+    .container {
+      max-width:900px;margin:0 auto;
+      background:#fff;border-radius:10px;
+      padding:20px;
+      box-shadow:0 4px 14px rgba(0,0,0,0.12);
+    }
+    header { text-align:center;margin-bottom:12px; }
+    header h1 {
+      margin:0;font-size:20px;
+      font-weight:600;color:#fff;
+      background:#0b5ed7;padding:6px;border-radius:6px 6px 0 0;
+    }
+    header h2 {
+      margin:0;font-size:14px;color:#fff;
+      background:#0b5ed7;padding:4px;border-radius:0 0 6px 6px;
+    }
+    .formNo {
+      margin-top:6px;font-size:12px;
+      font-weight:bold;
+      text-align:center;
+      padding-bottom:6px;
+      border-bottom:2px solid #0b5ed7;
+    }
+    .formBox {
+      border:2px solid #0b5ed7;
+      border-radius:8px;
+      padding:12px;
+      margin-top:12px;
+    }
+    .section {
+      margin:12px 0;
+      padding:10px;
+      border:1px solid #ccc;
+      border-radius:6px;
+      background:#fafafa;
+    }
+    .section h3 {
+      margin:0 0 8px;
+      font-size:14px;
+      font-weight:600;
+      color:#0b5ed7;
+      border-bottom:2px solid #0b5ed7;
+      padding-bottom:3px;
+    }
+    .row { display:flex;flex-wrap:wrap;gap:12px }
+    .col { flex:1;min-width:180px }
+    label { display:block;font-size:12px;margin-bottom:4px;color:#333 }
+    input,textarea {
+      width:100%;padding:6px;font-size:13px;
+      border:1px solid #bbb;border-radius:4px
+    }
+    textarea { resize:vertical;min-height:60px }
+    .sig {
+      border:1px solid #999;border-radius:4px;
+      height:80px;background:#fff;cursor:pointer;
+    }
+    .sig-controls { margin-top:6px }
+    .controls {
+      margin:15px 0;display:flex;gap:10px;flex-wrap:wrap
+    }
+    button {
+      padding:8px 14px;border:none;border-radius:5px;
+      background:#0b5ed7;color:#fff;font-size:13px;cursor:pointer
+    }
+    button.secondary { background:#555 }
+    #previewArea {
+      width:210mm;height:297mm;
+      margin:0 auto;padding:12mm;box-sizing:border-box;
+      border:1px solid #ddd;background:#fff;
+      overflow:hidden; /* force to fit one page */
+    }
+    #previewArea h1 {
+      font-size:16px;margin:0;text-align:center;color:#fff;
+      background:#0b5ed7;padding:6px;border-radius:6px 6px 0 0;
+    }
+    #previewArea h2 {
+      font-size:13px;margin:0;text-align:center;color:#fff;
+      background:#0b5ed7;padding:4px;border-radius:0 0 6px 6px;
+    }
+    #previewArea .formNo {
+      margin:6px 0 12px;text-align:center;
+      font-size:12px;font-weight:bold;
+      border-bottom:2px solid #0b5ed7;padding-bottom:4px;
+    }
+    #previewArea .formBox { border:2px solid #0b5ed7;padding:10px;border-radius:8px }
+    #previewArea h3 {
+      font-size:13px;margin-top:8px;margin-bottom:4px;
+      font-weight:600;color:#0b5ed7;
+      border-bottom:2px solid #0b5ed7;
+      padding-bottom:3px;
+    }
+    #previewArea p { font-size:12px;margin:2px 0;line-height:1.3 }
+    img.sig-img { border:1px solid #000; margin-top:4px }
+    #sigModal {
+      display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+      background:rgba(0,0,0,0.8);z-index:9999;align-items:center;justify-content:center;
+    }
+    #sigModalContent {
+      background:#fff;padding:20px;border-radius:10px;max-width:95%;max-height:90%;
+      display:flex;flex-direction:column;align-items:center;
+    }
+    #sigModal canvas { border:1px solid #000;width:100%;height:300px }
+    #sigModal .modal-controls { margin-top:10px;display:flex;gap:10px }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Jagannath Gupta Institute Of Medical Science & Hospital. North - Kolkata</h1>
+      <h2>"Information Technology Maintenance Cum Breakdown Service Report"</h2>
+      <div class="formNo">Form No: <span id="formNo"></span></div>
+    </header>
+
+    <!-- FORM -->
+    <form id="serviceForm" onsubmit="return false;">
+      <div class="formBox">
+        <div class="section">
+          <h3>Complaint Information</h3>
+          <div class="row">
+            <div class="col"><label>Date</label><input type="date" id="complaintDate"/></div>
+            <div class="col"><label>Time</label><input type="time" id="complaintTime"/></div>
+            <div class="col"><label>Department</label><input type="text" id="department"/></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Equipment Details</h3>
+          <div class="row">
+            <div class="col"><label>Equipment</label><input type="text" id="equipment"/></div>
+            <div class="col"><label>Model</label><input type="text" id="model"/></div>
+            <div class="col"><label>Make</label><input type="text" id="make"/></div>
+            <div class="col"><label>Serial No</label><input type="text" id="serial"/></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Problem & Resolution</h3>
+          <div class="row">
+            <div class="col"><label>Problem Reported</label><textarea id="problem"></textarea></div>
+            <div class="col"><label>Action Taken</label><textarea id="action"></textarea></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Completion Details</h3>
+          <div class="row">
+            <div class="col"><label>Finish Date</label><input type="date" id="finishDate" onchange="calcDowntime()"/></div>
+            <div class="col"><label>Finish Time</label><input type="time" id="finishTime" onchange="calcDowntime()"/></div>
+            <div class="col"><label>Downtime</label><input type="text" id="downtime" readonly/></div>
+          </div>
+          <div class="row">
+            <div class="col"><label>Repaired by</label><input type="text" id="repairedBy"/></div>
+            <div class="col"><label>Spare Parts Used</label><input type="text" id="spares"/></div>
+            <div class="col"><label>Cause of Failure</label><input type="text" id="cause"/></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>User Department</h3>
+          <div class="row">
+            <div class="col"><label>Name</label><input type="text" id="userDept"/></div>
+            <div class="col"><label>Emp Code</label><input type="text" id="userCode"/></div>
+            <div class="col">
+              <label>Signature (Click to sign)</label>
+              <canvas id="userSig" class="sig" width="250" height="80" onclick="openSigModal('user')"></canvas>
+              <div class="sig-controls">
+                <button type="button" class="secondary" onclick="userPad.clear()">Clear</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Engineer</h3>
+          <div class="row">
+            <div class="col"><label>Name</label><input type="text" id="engName"/></div>
+            <div class="col"><label>Code</label><input type="text" id="engCode"/></div>
+            <div class="col">
+              <label>Signature (Click to sign)</label>
+              <canvas id="engSig" class="sig" width="250" height="80" onclick="openSigModal('eng')"></canvas>
+              <div class="sig-controls">
+                <button type="button" class="secondary" onclick="engPad.clear()">Clear</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button type="button" onclick="renderPreview()">Preview</button>
+        <button type="button" onclick="downloadPDF()">Download PDF</button>
+        <button type="button" class="secondary" onclick="location.reload()">Reset</button>
+      </div>
+    </form>
+
+    <div>
+      <h3>Preview (A4 size)</h3>
+      <div id="previewArea"></div>
+    </div>
+  </div>
+
+  <!-- Signature Modal -->
+  <div id="sigModal">
+    <div id="sigModalContent">
+      <canvas id="modalSig"></canvas>
+      <div class="modal-controls">
+        <button type="button" onclick="modalPad.clear()">Clear</button>
+        <button type="button" onclick="saveModalSig()">Save</button>
+        <button type="button" class="secondary" onclick="closeSigModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIBS -->
+  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <script>
+    document.getElementById("formNo").innerText = "JIMSH-NK-" + Date.now();
+
+    const userPad = new SignaturePad(document.getElementById("userSig"));
+    const engPad = new SignaturePad(document.getElementById("engSig"));
+
+    let currentSig = null;
+    const modalCanvas = document.getElementById("modalSig");
+    const modalPad = new SignaturePad(modalCanvas);
+
+    function openSigModal(who){
+      currentSig = who;
+      modalPad.clear();
+      document.getElementById("sigModal").style.display="flex";
+      resizeModalCanvas();
+    }
+    function closeSigModal(){
+      document.getElementById("sigModal").style.display="none";
+    }
+    function saveModalSig(){
+      if(currentSig==="user"){
+        const ctx = userSig.getContext("2d");
+        ctx.clearRect(0,0,userSig.width,userSig.height);
+        const img = new Image();
+        img.onload = ()=>ctx.drawImage(img,0,0,userSig.width,userSig.height);
+        img.src = modalPad.toDataURL();
+      } else if(currentSig==="eng"){
+        const ctx = engSig.getContext("2d");
+        ctx.clearRect(0,0,engSig.width,engSig.height);
+        const img = new Image();
+        img.onload = ()=>ctx.drawImage(img,0,0,engSig.width,engSig.height);
+        img.src = modalPad.toDataURL();
+      }
+      closeSigModal();
+    }
+    function resizeModalCanvas(){
+      modalCanvas.width = modalCanvas.offsetWidth;
+      modalCanvas.height = 300;
+      modalPad.clear();
+    }
+
+    function calcDowntime(){
+      const startDate = complaintDate.value;
+      const startTime = complaintTime.value;
+      const endDate = finishDate.value;
+      const endTime = finishTime.value;
+      if(startDate && startTime && endDate && endTime){
+        const start = new Date(startDate+"T"+startTime);
+        const end = new Date(endDate+"T"+endTime);
+        if(end > start){
+          let diffMs = end - start;
+          let hours = Math.floor(diffMs/1000/60/60);
+          let mins = Math.floor((diffMs/1000/60) % 60);
+          downtime.value = hours+"h "+mins+"m";
+        }
+      }
+    }
+
+    function renderPreview(){
+      const prev = document.getElementById("previewArea");
+      prev.innerHTML = `
+        <h1>Jagannath Gupta Institute Of Medical Science & Hospital. North - Kolkata</h1>
+        <h2>Biomedical Equipment Maintenance Cum Breakdown Service Report</h2>
+        <div class="formNo">Form No: ${formNo.innerText}</div>
+        <div class="formBox">
+          <h3>Complaint Information</h3>
+          <p>Date: ${complaintDate.value}</p>
+          <p>Time: ${complaintTime.value}</p>
+          <p>Department: ${department.value}</p>
+          <h3>Equipment Details</h3>
+          <p>Equipment: ${equipment.value}</p>
+          <p>Model: ${model.value}</p>
+          <p>Make: ${make.value}</p>
+          <p>Serial No: ${serial.value}</p>
+          <h3>Problem & Resolution</h3>
+          <p>Problem Reported: ${problem.value}</p>
+          <p>Action Taken: ${action.value}</p>
+          <h3>Completion Details</h3>
+          <p>Finish Date: ${finishDate.value}</p>
+          <p>Finish Time: ${finishTime.value}</p>
+          <p>Downtime: ${downtime.value}</p>
+          <p>Repaired by: ${repairedBy.value}</p>
+          <p>Spare Parts Used: ${spares.value}</p>
+          <p>Cause of Failure: ${cause.value}</p>
+          <h3>User Department</h3>
+          <p>Name: ${userDept.value}</p>
+          <p>Emp Code: ${userCode.value}</p>
+          ${!userPad.isEmpty()?'<img class="sig-img" src="'+userSig.toDataURL()+'" width="120"/>':'<i>No Signature</i>'}
+          <h3>Engineer</h3>
+          <p>Name: ${engName.value}</p>
+          <p>Code: ${engCode.value}</p>
+          ${!engPad.isEmpty()?'<img class="sig-img" src="'+engSig.toDataURL()+'" width="120"/>':'<i>No Signature</i>'}
+        </div>
+      `;
+      return prev;
+    }
+
+    async function downloadPDF(){
+      const preview = renderPreview();
+      await new Promise(r=>setTimeout(r,150));
+      const canvas = await html2canvas(preview,{scale:2});
+      const imgData = canvas.toDataURL("image/png");
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF("p","mm","a4");
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      pdf.addImage(imgData,"PNG",0,0,pageWidth,pageHeight);
+      pdf.save(formNo.innerText+".pdf");
+    }
+  </script>
+</body>
+</html>
