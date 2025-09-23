@@ -14,10 +14,10 @@ header h2{margin:0;font-size:10px;color:#fff;background:#0b5ed7;padding:3px;bord
 .formNo{margin:6px 0 10px;text-align:center;font-size:10px;font-weight:bold;border-bottom:2px solid #0b5ed7;padding-bottom:2px}
 .formBox{border:1.5px solid #0b5ed7;border-radius:6px;padding:6px;margin-top:6px}
 .section{margin:8px 0;padding:6px;border:1px solid #ccc;border-radius:4px;background:#fafafa}
-.section h3{margin:0 0 6px;font-size:11px;font-weight:bold;color:#0b5ed7;border-bottom:1.5px solid #0b5ed7;padding-bottom:2px;text-align:left}
+.section h3{margin:0 0 6px;font-size:11px;font-weight:bold;color:#0b5ed7;border-bottom:1.5px solid #0b5ed7;padding-bottom:2px;text-align:left;text-decoration:underline}
 .row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
 .col{flex:1;min-width:95px}
-label{display:block;font-size:10px;margin-bottom:2px;color:#333}
+label{display:block;font-size:11px;margin-bottom:2px;font-weight:bold;color:#333}
 input,textarea{width:100%;padding:4px;font-size:11px;border:1px solid #bbb;border-radius:3px}
 textarea{resize:vertical;min-height:40px}
 .sig{border:1px solid #999;border-radius:3px;height:50px;background:#fff;cursor:pointer}
@@ -52,24 +52,32 @@ img.sig-img{border:1px solid #000;margin-top:2px;height:50px}
 <button id="btn-register">Register</button>
 <p id="auth-msg"></p>
 </div>
+
 <div id="user-info" class="hidden">
 Logged in as: <span id="user-email"></span> <span id="admin-badge" class="admin-badge hidden">ADMIN</span>
 </div>
+
 <div id="form-container" class="hidden">
 <header>
 <img src="logo.jpg" alt="Company Logo">
 <h1>Information Technology Maintenance Cum Breakdown Digital Service Report</h1>
 <div class="formNo">Form No: <span id="formNo"></span></div>
 </header>
+
 <form id="serviceForm" onsubmit="return false;">
 <div class="formBox">
+
+<!-- Complaint Information -->
 <div class="section">
 <h3>Complaint Information</h3>
 <div class="row">
 <div class="col"><label>Date</label><input type="date" id="complaintDate"/></div>
 <div class="col"><label>Time</label><input type="time" id="complaintTime"/></div>
 <div class="col"><label>Department</label><input type="text" id="department"/></div>
-</div></div>
+</div>
+</div>
+
+<!-- Equipment Details -->
 <div class="section">
 <h3>Equipment Details</h3>
 <div class="row">
@@ -77,13 +85,19 @@ Logged in as: <span id="user-email"></span> <span id="admin-badge" class="admin-
 <div class="col"><label>Model</label><input type="text" id="model"/></div>
 <div class="col"><label>Make</label><input type="text" id="make"/></div>
 <div class="col"><label>Serial No</label><input type="text" id="serial"/></div>
-</div></div>
+</div>
+</div>
+
+<!-- Problem & Resolution -->
 <div class="section">
 <h3>Problem & Resolution</h3>
 <div class="row">
 <div class="col"><label>Problem Reported</label><textarea id="problem"></textarea></div>
 <div class="col"><label>Action Taken</label><textarea id="action"></textarea></div>
-</div></div>
+</div>
+</div>
+
+<!-- Completion Details -->
 <div class="section">
 <h3>Completion Details</h3>
 <div class="row">
@@ -95,7 +109,10 @@ Logged in as: <span id="user-email"></span> <span id="admin-badge" class="admin-
 <div class="col"><label>Repaired by</label><input type="text" id="repairedBy"/></div>
 <div class="col"><label>Spare Parts Used</label><input type="text" id="spares"/></div>
 <div class="col"><label>Cause of Failure</label><input type="text" id="cause"/></div>
-</div></div>
+</div>
+</div>
+
+<!-- User Department -->
 <div class="section">
 <h3>User Department</h3>
 <div class="row">
@@ -106,7 +123,10 @@ Logged in as: <span id="user-email"></span> <span id="admin-badge" class="admin-
 <canvas id="userSig" class="sig" onclick="openSigModal('user')"></canvas>
 <div class="sig-controls"><button type="button" class="secondary" onclick="userPad.clear()">Clear</button></div>
 </div>
-</div></div>
+</div>
+</div>
+
+<!-- Engineer -->
 <div class="section">
 <h3>Engineer</h3>
 <div class="row">
@@ -117,8 +137,12 @@ Logged in as: <span id="user-email"></span> <span id="admin-badge" class="admin-
 <canvas id="engSig" class="sig" onclick="openSigModal('eng')"></canvas>
 <div class="sig-controls"><button type="button" class="secondary" onclick="engPad.clear()">Clear</button></div>
 </div>
-</div></div>
 </div>
+</div>
+
+</div>
+
+<!-- Form Buttons -->
 <div class="controls">
 <button type="button" onclick="renderPreview()">Preview</button>
 <button type="button" onclick="downloadPDF()">Download PDF</button>
@@ -126,12 +150,13 @@ Logged in as: <span id="user-email"></span> <span id="admin-badge" class="admin-
 <button type="button" id="btn-save-firestore">Save to Cloud</button>
 </div>
 </form>
-<div>
+
 <h3>Preview (A4 size)</h3>
 <div id="previewArea"></div>
 </div>
-</div></div>
+</div>
 
+<!-- Signature Modal -->
 <div id="sigModal">
 <div id="sigModalContent">
 <canvas id="modalSig"></canvas>
@@ -143,6 +168,7 @@ Logged in as: <span id="user-email"></span> <span id="admin-badge" class="admin-
 </div>
 </div>
 
+<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -161,21 +187,49 @@ function closeSigModal(){document.getElementById("sigModal").style.display="none
 function saveModalSig(){const ctx=currentSig==="user"?userSig.getContext("2d"):engSig.getContext("2d");ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);const img=new Image();img.onload=()=>ctx.drawImage(img,0,0,ctx.canvas.width,ctx.canvas.height);img.src=modalPad.toDataURL();closeSigModal();}
 function resizeModalCanvas(){modalCanvas.width=modalCanvas.offsetWidth;modalCanvas.height=150;modalPad.clear();}
 function calcDowntime(){const start=new Date(complaintDate.value+"T"+complaintTime.value);const end=new Date(finishDate.value+"T"+finishTime.value);if(end>start){let diff=end-start;let h=Math.floor(diff/3600000);let m=Math.floor((diff/60000)%60);downtime.value=h+"h "+m+"m";}}
-function renderPreview(){const prev=document.getElementById("previewArea");prev.innerHTML=`
+function renderPreview(){
+const prev=document.getElementById("previewArea");
+prev.innerHTML=`
 <img src="logo.jpg" alt="Company Logo">
 <h1 style="font-size:12px;color:#fff;background:#0b5ed7;padding:4px;border-radius:4px">Information Technology Maintenance Cum Breakdown Digital Service Report</h1>
 <div class="formNo">Form No: ${formNo.innerText}</div>
 <div class="formBox" style="text-align:left;">
-<h3>Complaint Info</h3><p>Date: ${complaintDate.value}</p><p>Time: ${complaintTime.value}</p><p>Dept: ${department.value}</p>
-<h3>Equipment Details</h3><p>Equipment: ${equipment.value}</p><p>Model: ${model.value}</p><p>Make: ${make.value}</p><p>Serial: ${serial.value}</p>
-<h3>Problem & Resolution</h3><p>${problem.value}</p><p>${action.value}</p>
-<h3>Completion Details</h3><p>Finish: ${finishDate.value} ${finishTime.value}</p><p>Downtime: ${downtime.value}</p><p>Repaired by: ${repairedBy.value}</p><p>Spares: ${spares.value}</p><p>Cause: ${cause.value}</p>
-<h3>User Dept</h3><p>Name: ${userDept.value}</p><p>Emp Code: ${userCode.value}</p>${!userPad.isEmpty()?'<img class="sig-img" src="'+userSig.toDataURL()+'">':'<i>No Signature</i>'}
-<h3>Engineer</h3><p>Name: ${engName.value}</p><p>Code: ${engCode.value}</p>${!engPad.isEmpty()?'<img class="sig-img" src="'+engSig.toDataURL()+'">':'<i>No Signature</i>'}
-</div>`;return prev;}
+<h3>Complaint Information</h3>
+<p><b>Date:</b> ${complaintDate.value}</p>
+<p><b>Time:</b> ${complaintTime.value}</p>
+<p><b>Dept:</b> ${department.value}</p>
+
+<h3>Equipment Details</h3>
+<p><b>Equipment:</b> ${equipment.value}</p>
+<p><b>Model:</b> ${model.value}</p>
+<p><b>Make:</b> ${make.value}</p>
+<p><b>Serial:</b> ${serial.value}</p>
+
+<h3>Problem & Resolution</h3>
+<p><b>Problem:</b> ${problem.value}</p>
+<p><b>Action:</b> ${action.value}</p>
+
+<h3>Completion Details</h3>
+<p><b>Finish:</b> ${finishDate.value} ${finishTime.value}</p>
+<p><b>Downtime:</b> ${downtime.value}</p>
+<p><b>Repaired by:</b> ${repairedBy.value}</p>
+<p><b>Spares:</b> ${spares.value}</p>
+<p><b>Cause:</b> ${cause.value}</p>
+
+<h3>User Department</h3>
+<p><b>Name:</b> ${userDept.value}</p>
+<p><b>Emp Code:</b> ${userCode.value}</p>
+${!userPad.isEmpty()?'<img class="sig-img" src="'+userSig.toDataURL()+'">':'<i>No Signature</i>'}
+
+<h3>Engineer</h3>
+<p><b>Name:</b> ${engName.value}</p>
+<p><b>Code:</b> ${engCode.value}</p>
+${!engPad.isEmpty()?'<img class="sig-img" src="'+engSig.toDataURL()+'">':'<i>No Signature</i>'}
+</div>`;
+return prev;}
 async function downloadPDF(){const prev=renderPreview();await new Promise(r=>setTimeout(r,100));const canvas=await html2canvas(prev,{scale:2});const imgData=canvas.toDataURL("image/png");const {jsPDF}=window.jspdf;const pdf=new jsPDF("p","mm","a4");pdf.addImage(imgData,"PNG",0,0,pdf.internal.pageSize.getWidth(),pdf.internal.pageSize.getHeight());pdf.save(formNo.innerText+".pdf");}
 
-// Firebase (unchanged)
+// Firebase
 var firebaseConfig={apiKey:"AIzaSyAWPlgLt8OQPX6Gq6hzsp46VZxSxXIU5i0",authDomain:"digital-service-report.firebaseapp.com",projectId:"digital-service-report",storageBucket:"digital-service-report.appspot.com",messagingSenderId:"783895149200",appId:"1:783895149200:web:01c08a62d429bf1bf8f615"};
 firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth(),db=firebase.firestore(),storage=firebase.storage();
