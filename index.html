@@ -11,26 +11,26 @@ header{text-align:center;margin-bottom:5px}
 header img{max-height:40px;margin-bottom:3px}
 header h1{margin:0;font-size:12px;font-weight:600;color:#fff;background:#0b5ed7;padding:4px;border-radius:4px 4px 0 0}
 header h2{margin:0;font-size:10px;color:#fff;background:#0b5ed7;padding:3px;border-radius:0 0 4px 4px}
-.formNo{margin:4px 0 8px;text-align:center;font-size:10px;font-weight:bold;border-bottom:2px solid #0b5ed7;padding-bottom:2px}
+.formNo{margin:6px 0 10px;text-align:center;font-size:10px;font-weight:bold;border-bottom:2px solid #0b5ed7;padding-bottom:2px}
 .formBox{border:1.5px solid #0b5ed7;border-radius:6px;padding:6px;margin-top:6px}
-.section{margin:6px 0;padding:6px;border:1px solid #ccc;border-radius:4px;background:#fafafa}
-.section h3{margin:0 0 4px;font-size:11px;font-weight:bold;color:#0b5ed7;border-bottom:1.5px solid #0b5ed7;padding-bottom:1px}
-.row{display:flex;flex-wrap:wrap;gap:4px}
-.col{flex:1;min-width:100px}
+.section{margin:8px 0;padding:6px;border:1px solid #ccc;border-radius:4px;background:#fafafa}
+.section h3{margin:0 0 6px;font-size:11px;font-weight:bold;color:#0b5ed7;border-bottom:1.5px solid #0b5ed7;padding-bottom:2px;text-align:left}
+.row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.col{flex:1;min-width:95px}
 label{display:block;font-size:10px;margin-bottom:2px;color:#333}
 input,textarea{width:100%;padding:4px;font-size:11px;border:1px solid #bbb;border-radius:3px}
 textarea{resize:vertical;min-height:40px}
 .sig{border:1px solid #999;border-radius:3px;height:50px;background:#fff;cursor:pointer}
 .sig-controls{margin-top:2px}
-.controls{margin:6px 0;display:flex;gap:4px;flex-wrap:wrap}
-button{padding:5px 8px;border:none;border-radius:4px;background:#0b5ed7;color:#fff;font-size:11px;cursor:pointer}
+.controls{margin:6px 0;display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+button{padding:5px 10px;border:none;border-radius:4px;background:#0b5ed7;color:#fff;font-size:11px;cursor:pointer}
 button.secondary{background:#555}
-#previewArea{width:210mm;height:297mm;margin:0 auto;padding:6mm;box-sizing:border-box;border:1px solid #ddd;background:#fff;overflow:hidden;font-size:10px}
-#previewArea img{max-width:80%;height:auto;margin-bottom:2px}
+#previewArea{width:210mm;height:297mm;margin:0 auto;padding:6mm;box-sizing:border-box;border:1px solid #ddd;background:#fff;overflow:hidden;font-size:10px;text-align:center}
+#previewArea img{max-height:40px;margin-bottom:4px}
 img.sig-img{border:1px solid #000;margin-top:2px;height:50px}
-#sigModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:9999;align-items:center;justify-content:center}
+#sigModal{display:none;position:fixed;top:0;left:0;width:95%;height:100%;background:rgba(0,0,0,0.8);z-index:9999;align-items:center;justify-content:center}
 #sigModalContent{background:#fff;padding:8px;border-radius:8px;max-width:95%;max-height:90%;display:flex;flex-direction:column;align-items:center}
-#sigModal canvas{border:1px solid #000;width:100%;height:180px}
+#sigModal canvas{border:1px solid #000;width:95%;height:180px}
 #sigModal .modal-controls{margin-top:6px;display:flex;gap:4px;flex-wrap:wrap}
 #auth-ui{margin-bottom:8px;padding:6px;border:1px solid #ccc;border-radius:4px;background:#f5f5f5;text-align:center}
 #auth-ui img{max-height:30px;margin-bottom:3px}
@@ -58,8 +58,7 @@ Logged in as: <span id="user-email"></span> <span id="admin-badge" class="admin-
 <div id="form-container" class="hidden">
 <header>
 <img src="logo.jpg" alt="Company Logo">
-<h1>Jagannath Gupta Institute Of Medical Science & Hospital</h1>
-<h2>"Information Technology Maintenance Cum Breakdown Service Report"</h2>
+<h1>Information Technology Maintenance Cum Breakdown Digital Service Report</h1>
 <div class="formNo">Form No: <span id="formNo"></span></div>
 </header>
 <form id="serviceForm" onsubmit="return false;">
@@ -160,12 +159,13 @@ let currentSig=null;const modalCanvas=document.getElementById("modalSig");const 
 function openSigModal(who){currentSig=who;modalPad.clear();document.getElementById("sigModal").style.display="flex";resizeModalCanvas();}
 function closeSigModal(){document.getElementById("sigModal").style.display="none";}
 function saveModalSig(){const ctx=currentSig==="user"?userSig.getContext("2d"):engSig.getContext("2d");ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);const img=new Image();img.onload=()=>ctx.drawImage(img,0,0,ctx.canvas.width,ctx.canvas.height);img.src=modalPad.toDataURL();closeSigModal();}
-function resizeModalCanvas(){modalCanvas.width=modalCanvas.offsetWidth;modalCanvas.height=180;modalPad.clear();}
+function resizeModalCanvas(){modalCanvas.width=modalCanvas.offsetWidth;modalCanvas.height=150;modalPad.clear();}
 function calcDowntime(){const start=new Date(complaintDate.value+"T"+complaintTime.value);const end=new Date(finishDate.value+"T"+finishTime.value);if(end>start){let diff=end-start;let h=Math.floor(diff/3600000);let m=Math.floor((diff/60000)%60);downtime.value=h+"h "+m+"m";}}
-function renderPreview(){const prev=document.getElementById("previewArea");prev.innerHTML=`<img src="logo.jpg"><h1 style="font-size:08px">
-<h2 style="font-size:12px">"Information Technology Maintenance Cum Breakdown Service Report"</h2>
+function renderPreview(){const prev=document.getElementById("previewArea");prev.innerHTML=`
+<img src="logo.jpg" alt="Company Logo">
+<h1 style="font-size:12px;color:#fff;background:#0b5ed7;padding:4px;border-radius:4px">Information Technology Maintenance Cum Breakdown Digital Service Report</h1>
 <div class="formNo">Form No: ${formNo.innerText}</div>
-<div class="formBox">
+<div class="formBox" style="text-align:left;">
 <h3>Complaint Info</h3><p>Date: ${complaintDate.value}</p><p>Time: ${complaintTime.value}</p><p>Dept: ${department.value}</p>
 <h3>Equipment Details</h3><p>Equipment: ${equipment.value}</p><p>Model: ${model.value}</p><p>Make: ${make.value}</p><p>Serial: ${serial.value}</p>
 <h3>Problem & Resolution</h3><p>${problem.value}</p><p>${action.value}</p>
@@ -175,7 +175,7 @@ function renderPreview(){const prev=document.getElementById("previewArea");prev.
 </div>`;return prev;}
 async function downloadPDF(){const prev=renderPreview();await new Promise(r=>setTimeout(r,100));const canvas=await html2canvas(prev,{scale:2});const imgData=canvas.toDataURL("image/png");const {jsPDF}=window.jspdf;const pdf=new jsPDF("p","mm","a4");pdf.addImage(imgData,"PNG",0,0,pdf.internal.pageSize.getWidth(),pdf.internal.pageSize.getHeight());pdf.save(formNo.innerText+".pdf");}
 
-// Firebase (same as original)
+// Firebase (unchanged)
 var firebaseConfig={apiKey:"AIzaSyAWPlgLt8OQPX6Gq6hzsp46VZxSxXIU5i0",authDomain:"digital-service-report.firebaseapp.com",projectId:"digital-service-report",storageBucket:"digital-service-report.appspot.com",messagingSenderId:"783895149200",appId:"1:783895149200:web:01c08a62d429bf1bf8f615"};
 firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth(),db=firebase.firestore(),storage=firebase.storage();
