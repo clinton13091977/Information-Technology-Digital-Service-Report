@@ -42,6 +42,8 @@ img.sig-img{border:1px solid #000;margin-top:2px;height:50px}
 </head>
 <body>
 <div class="container">
+
+<!-- Login UI -->
 <div id="auth-ui">
 <img src="logo.jpg" alt="Company Logo">
 <h3>Login</h3>
@@ -53,10 +55,12 @@ img.sig-img{border:1px solid #000;margin-top:2px;height:50px}
 <p id="auth-msg"></p>
 </div>
 
+<!-- User Info -->
 <div id="user-info" class="hidden">
 Logged in as: <span id="user-email"></span> <span id="admin-badge" class="admin-badge hidden">ADMIN</span>
 </div>
 
+<!-- Service Report Form -->
 <div id="form-container" class="hidden">
 <header>
 <img src="logo.jpg" alt="Company Logo">
@@ -139,10 +143,9 @@ Logged in as: <span id="user-email"></span> <span id="admin-badge" class="admin-
 </div>
 </div>
 </div>
-
 </div>
 
-<!-- Form Buttons -->
+<!-- Buttons -->
 <div class="controls">
 <button type="button" onclick="renderPreview()">Preview</button>
 <button type="button" onclick="downloadPDF()">Download PDF</button>
@@ -168,7 +171,7 @@ Logged in as: <span id="user-email"></span> <span id="admin-badge" class="admin-
 </div>
 </div>
 
-<!-- Scripts -->
+<!-- Libraries -->
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -178,7 +181,61 @@ Logged in as: <span id="user-email"></span> <span id="admin-badge" class="admin-
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
 
 <script>
-// Signature & Preview
+// Firebase config
+var firebaseConfig = {
+apiKey:"AIzaSyAWPlgLt8OQPX6Gq6hzsp46VZxSxXIU5i0",
+authDomain:"digital-service-report.firebaseapp.com",
+projectId:"digital-service-report",
+storageBucket:"digital-service-report.appspot.com",
+messagingSenderId:"783895149200",
+appId:"1:783895149200:web:01c08a62d429bf1bf8f615"
+};
+firebase.initializeApp(firebaseConfig);
+
+// Auth and Firestore
+const auth=firebase.auth(),db=firebase.firestore(),storage=firebase.storage();
+const btnLogin=document.getElementById("btn-login"),btnLogout=document.getElementById("btn-logout"),btnRegister=document.getElementById("btn-register"),authMsg=document.getElementById("auth-msg"),userInfo=document.getElementById("user-info"),userEmailSpan=document.getElementById("user-email"),adminBadge=document.getElementById("admin-badge"),btnSave=document.getElementById("btn-save-firestore"),formContainer=document.getElementById("form-container");
+
+// Check admin
+function checkAdmin(uid){return db.collection("admins").doc(uid).get().then(doc=>doc.exists);}
+
+// Auth state
+auth.onAuthStateChanged(async user=>{
+if(user){
+userInfo.classList.remove("hidden");
+userEmailSpan.textContent=user.email;
+btnLogin.classList.add("hidden");
+btnRegister.classList.add("hidden");
+btnLogout.classList.remove("hidden");
+formContainer.classList.remove("hidden");
+const isAdmin=await checkAdmin(user.uid);
+adminBadge.classList.toggle("hidden",!isAdmin);
+btnSave.disabled=false;
+}else{
+userInfo.classList.add("hidden");
+btnLogin.classList.remove("hidden");
+btnRegister.classList.remove("hidden");
+btnLogout.classList.add("hidden");
+adminBadge.classList.add("hidden");
+btnSave.disabled=true;
+formContainer.classList.add("hidden");
+}
+});
+
+// Login/Register/Logout
+btnLogin.addEventListener("click",()=>{
+auth.signInWithEmailAndPassword(email.value,password.value)
+.then(()=>authMsg.textContent="Login successful")
+.catch(err=>authMsg.textContent=err.message);
+});
+btnRegister.addEventListener("click",()=>{
+auth.createUserWithEmailAndPassword(email.value,password.value)
+.then(()=>authMsg.textContent="Registered & logged in")
+.catch(err=>authMsg.textContent=err.message);
+});
+btnLogout.addEventListener("click",()=>{auth.signOut();});
+
+// Signature pads
 document.getElementById("formNo").innerText="JIMSH-NK-"+Date.now();
 const userPad=new SignaturePad(document.getElementById("userSig")),engPad=new SignaturePad(document.getElementById("engSig"));
 let currentSig=null;const modalCanvas=document.getElementById("modalSig");const modalPad=new SignaturePad(modalCanvas);
@@ -186,18 +243,26 @@ function openSigModal(who){currentSig=who;modalPad.clear();document.getElementBy
 function closeSigModal(){document.getElementById("sigModal").style.display="none";}
 function saveModalSig(){const ctx=currentSig==="user"?userSig.getContext("2d"):engSig.getContext("2d");ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);const img=new Image();img.onload=()=>ctx.drawImage(img,0,0,ctx.canvas.width,ctx.canvas.height);img.src=modalPad.toDataURL();closeSigModal();}
 function resizeModalCanvas(){modalCanvas.width=modalCanvas.offsetWidth;modalCanvas.height=150;modalPad.clear();}
-function calcDowntime(){const start=new Date(complaintDate.value+"T"+complaintTime.value);const end=new Date(finishDate.value+"T"+finishTime.value);if(end>start){let diff=end-start;let h=Math.floor(diff/3600000);let m=Math.floor((diff/60000)%60);downtime.value=h+"h "+m+"m";}}
+
+// Downtime calculation
+function calcDowntime(){
+const start=new Date(complaintDate.value+"T"+complaintTime.value);
+const end=new Date(finishDate.value+"T"+finishTime.value);
+if(end>start){let diff=end-start;let h=Math.floor(diff/3600000);let m=Math.floor((diff/60000)%60);downtime.value=h+"h "+m+"m";}
+}
+
+// Preview & PDF
 function renderPreview(){
 const prev=document.getElementById("previewArea");
 prev.innerHTML=`
-<img src="logo.jpg" alt="Company Logo">
-<h1 style="font-size:12px;color:#fff;background:#0b5ed7;padding:4px;border-radius:4px">Information Technology Maintenance Cum Breakdown Digital Service Report</h1>
+<img src="logo.jpg">
+<h1 style="font-size:10px;color:#fff;background:#0b5ed7;padding:4px;border-radius:4px">Information Technology Maintenance Cum Breakdown Digital Service Report</h1>
 <div class="formNo">Form No: ${formNo.innerText}</div>
-<div class="formBox" style="text-align:left;">
+<div class="formBox" style="text-align:left">
 <h3>Complaint Information</h3>
 <p><b>Date:</b> ${complaintDate.value}</p>
 <p><b>Time:</b> ${complaintTime.value}</p>
-<p><b>Dept:</b> ${department.value}</p>
+<p><b>Department:</b> ${department.value}</p>
 
 <h3>Equipment Details</h3>
 <p><b>Equipment:</b> ${equipment.value}</p>
@@ -226,20 +291,18 @@ ${!userPad.isEmpty()?'<img class="sig-img" src="'+userSig.toDataURL()+'">':'<i>N
 <p><b>Code:</b> ${engCode.value}</p>
 ${!engPad.isEmpty()?'<img class="sig-img" src="'+engSig.toDataURL()+'">':'<i>No Signature</i>'}
 </div>`;
-return prev;}
-async function downloadPDF(){const prev=renderPreview();await new Promise(r=>setTimeout(r,100));const canvas=await html2canvas(prev,{scale:2});const imgData=canvas.toDataURL("image/png");const {jsPDF}=window.jspdf;const pdf=new jsPDF("p","mm","a4");pdf.addImage(imgData,"PNG",0,0,pdf.internal.pageSize.getWidth(),pdf.internal.pageSize.getHeight());pdf.save(formNo.innerText+".pdf");}
+return prev;
+}
 
-// Firebase
-var firebaseConfig={apiKey:"AIzaSyAWPlgLt8OQPX6Gq6hzsp46VZxSxXIU5i0",authDomain:"digital-service-report.firebaseapp.com",projectId:"digital-service-report",storageBucket:"digital-service-report.appspot.com",messagingSenderId:"783895149200",appId:"1:783895149200:web:01c08a62d429bf1bf8f615"};
-firebase.initializeApp(firebaseConfig);
-const auth=firebase.auth(),db=firebase.firestore(),storage=firebase.storage();
-const btnLogin=document.getElementById("btn-login"),btnLogout=document.getElementById("btn-logout"),btnRegister=document.getElementById("btn-register"),authMsg=document.getElementById("auth-msg"),userInfo=document.getElementById("user-info"),userEmailSpan=document.getElementById("user-email"),adminBadge=document.getElementById("admin-badge"),btnSave=document.getElementById("btn-save-firestore"),formContainer=document.getElementById("form-container");
-function checkAdmin(uid){return db.collection("admins").doc(uid).get().then(doc=>doc.exists);}
-auth.onAuthStateChanged(async user=>{if(user){userInfo.classList.remove("hidden");userEmailSpan.textContent=user.email;btnLogin.classList.add("hidden");btnRegister.classList.add("hidden");btnLogout.classList.remove("hidden");formContainer.classList.remove("hidden");const isAdmin=await checkAdmin(user.uid);adminBadge.classList.toggle("hidden",!isAdmin);btnSave.disabled=false;}else{userInfo.classList.add("hidden");btnLogin.classList.remove("hidden");btnRegister.classList.remove("hidden");btnLogout.classList.add("hidden");adminBadge.classList.add("hidden");btnSave.disabled=true;formContainer.classList.add("hidden");}});
-btnLogin.addEventListener("click",()=>{auth.signInWithEmailAndPassword(email.value,password.value).then(()=>authMsg.textContent="Login successful").catch(err=>authMsg.textContent=err.message);});
-btnRegister.addEventListener("click",()=>{auth.createUserWithEmailAndPassword(email.value,password.value).then(()=>authMsg.textContent="Registered & logged in").catch(err=>authMsg.textContent=err.message);});
-btnLogout.addEventListener("click",()=>{auth.signOut();});
-btnSave.addEventListener("click",async ()=>{const user=auth.currentUser;if(!user){alert("Login first");return;}const prev=renderPreview();await new Promise(r=>setTimeout(r,100));const canvas=await html2canvas(prev,{scale:2});const imgData=canvas.toDataURL("image/png");const {jsPDF}=window.jspdf;const pdf=new jsPDF("p","mm","a4");pdf.addImage(imgData,"PNG",0,0,pdf.internal.pageSize.getWidth(),pdf.internal.pageSize.getHeight());const pdfBlob=pdf.output("blob");const fileName=`submissions/${user.uid}_${Date.now()}.pdf`;const storageRef=storage.ref(fileName);try{const snapshot=await storageRef.put(pdfBlob);const downloadURL=await snapshot.ref.getDownloadURL();const data={formNo:formNo.innerText,complaintDate:complaintDate.value,complaintTime:complaintTime.value,department:department.value,equipment:equipment.value,model:model.value,make:make.value,serial:serial.value,problem:problem.value,action:action.value,finishDate:finishDate.value,finishTime:finishTime.value,downtime:downtime.value,repairedBy:repairedBy.value,spares:spares.value,cause:cause.value,userDept:userDept.value,userCode:userCode.value,engName:engName.value,engCode:engCode.value,userSig:userPad.isEmpty()?null:userSig.toDataURL(),engSig:engPad.isEmpty()?null:engSig.toDataURL(),pdfURL:downloadURL,createdBy:user.uid,timestamp:firebase.firestore.FieldValue.serverTimestamp()};await db.collection("submissions").add(data);alert("Form + PDF uploaded successfully!");}catch(err){alert("Error saving form: "+err.message);}});
+async function downloadPDF(){
+const prev=renderPreview();await new Promise(r=>setTimeout(r,100));
+const canvas=await html2canvas(prev,{scale:2});
+const imgData=canvas.toDataURL("image/png");
+const {jsPDF}=window.jspdf;
+const pdf=new jsPDF("p","mm","a4");
+pdf.addImage(imgData,"PNG",0,0,pdf.internal.pageSize.getWidth(),pdf.internal.pageSize.getHeight());
+pdf.save(formNo.innerText+".pdf");
+}
 </script>
 </body>
 </html>
